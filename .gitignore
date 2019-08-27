@@ -1,0 +1,12 @@
+a.out
+a.out.dSYM
+*~
+main.c
+.vscode
+unit_test.h
+unit_test.c
+*.o
+libft.a
+libft.so
+\#*\#
+.\#*
