@@ -6,73 +6,60 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/10/19 13:32:38 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/10/29 17:24:01 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-#ifndef BUFFER_SIZE
-# define BUFFER_SIZE 1
-#endif
-
-static int		error(int fd, char *s)
-{
-	(void)s;
-	if (fd < 0)
-		return (-1);
-}
-
 static int		is_endl(char *buffer)
 {
-	size_t i;
+	int i;
 
 	i = 0;
-	while (i < BUFFER_SIZE)
+	while (!buffer[i])
 		if (buffer[i++] == '\n')
 			return (1);
 	return (0);
 }
 
-static void		read_line(int fd, char **str)
+static int	read_line(int fd, char **line, char *str, size_t idx)
 {
 	char	buffer[BUFFER_SIZE + 1];
 	int		ret;
+	int		i;
 
 	while ((ret = read(fd, buffer, BUFFER_SIZE)))
 	{
-		buffer[ret] = '\0';
-		*str = ft_strdup_cat(*str, buffer);
+		buffer[ret] =  '\0';
 		if (is_endl(buffer))
-			return ;
-	}
-}
-
-static void		format_line(char **line, char *str)
-{
-	size_t i;
-
-	i = -1;
-	while (str[++i] != '\n')
-	{
-		
-		*line = ft_strdup(&str[i + 1]);
-//		str = ft_strdup(&str[i + 1]);
+		{
+			if (!(malloc(idx * BUFFER_SIZE + 1)))
+				return (-1);
+			i = 0;
+			while (i < ret && buffer[i] != '\n')
+			{
+				*line[(idx - 1) * BUFFER_SIZE + i] =  buffer[i];
+				i++;
+			}
+			*line[(idx - 1) * BUFFER_SIZE + i] =  '\0';
+			return (1);
+		}
+		else 
+			return (read_line(fd, line, str, idx + 1));
 	}
 	
+	return (0);
 }
 
 int		get_next_line(int fd, char **line)
 {
-	static char	*str;
-	size_t		i;
+	static char	str[BUFFER_SIZE];
 
-//	if (error(fd) == -1)
-//		return (-1);
+	if (fd < 0)
+		return (-1);
+	return (read_line(fd, line, str, 1) == -1);
 
-	read_line(fd, &str);
-	format_line(line, str);	
-	
 
 	return (0);
 }

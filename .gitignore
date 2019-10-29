@@ -10,3 +10,6 @@ libft.a
 libft.so
 \#*\#
 .\#*
+tests/
+test.c
+test.sh
