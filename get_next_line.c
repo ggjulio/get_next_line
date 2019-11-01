@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/01 19:25:59 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/01 19:37:45 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,17 +90,18 @@ static int	read_line(int fd, char **line, char *str, int *str_len, size_t idx)
 		}
 		else
 		{
-			if ((is_line = read_line(fd, line, str, str_len, idx + 1)))
+			if ((is_line = read_line(fd, line, str, str_len, idx + 1)) == -1)
+					return (-1);				
+			if (!is_line) 			// if read_line return 0 malloc and copy from this idx (EOF)
+				if (!(*line = malloc((idx + 1) * BUFFER_SIZE + *str_len + 1)))
+					return (-1);
+			i = 0;
+			while (i < BUFFER_SIZE)
 			{
-				i = 0;
-				while (i < BUFFER_SIZE)
-				{
-					(*line)[(idx) * BUFFER_SIZE + *str_len +i] = buffer[i];
-					i++;
-				}
+				(*line)[(idx) * BUFFER_SIZE + *str_len +i] = buffer[i];
+				i++;
 			}
-//			else if (!is_line)
-			// malloc and copy from this idx
+			return (1);
 			return (is_line);
 		}
 	}
