@@ -6,87 +6,113 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/10/30 15:48:24 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/01 18:56:14 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
+// return -1 if no nl, return -2 if \0 in str,
+//  or return the size of str before nl. (it can be 0)
 static int		is_endl(char *buffer)
 {
 	int i;
 
 	i = 0;
 	while (i < BUFFER_SIZE)
-		if (buffer[i++] == '\n')
-			return (1);
-	return (0);
+	{
+		if (buffer[i] == '\n')
+			return (i);
+		if (buffer[i] == '\0')
+			return (-2);			
+		i++;
+	}
+	return (-1);
 }
 
-static int	get_str(char *str)
+static int	read_line(int fd, char **line, char *str, int *str_len, size_t idx)
 {
+	char	buffer[BUFFER_SIZE];
+	int		ret;
 	int		i;
 	int		j;
-
-	if (is_endl(str))
+	int		endl_idx;
+	int		is_line;
+	
+	if ((endl_idx = is_endl(str)) >= 0 && idx == 0) // if there is a \n in str and no recurtion
 	{
-		if (!(*line = malloc((BUFFER_SIZE + 1)))) // A CHANGER POUR MALLOC LA BONNE TAILLE
-			return (-1);
 		i = 0;
-		j = 0;
+		if (!(*line = malloc(endl_idx + 1)))
+			return (-1);
 		while (str[i] != '\n')
 		{
-			(*line)[i] =  str[i];
+			(*line)[i] = str[i];
 			str[i++] = '\0';
 		}
-		str[i++] = '\0';
-		while (!str[i])
-			str[j++] = str[i++];
+		(*line)[i] = '\0';
+		j = 0;
+       //move the rest of str at the begining
+		while (i < BUFFER_SIZE && str[++i]) 
+			str[j++] = str[i];
 		str[j] = '\0';
 		return (1);
 	}
-}
 
-static int	read_line(int fd, char **line, char *str, size_t idx)
-{
-	char	buffer[BUFFER_SIZE + 1];
-	int		ret;
-	int		i;
-	
-	if
+
+
 	while ((ret = read(fd, buffer, BUFFER_SIZE)))
 	{
-		if (is_endl(buffer))
+//		if ((endl_idx = is_endl(buffer)) == -2) // if there is a \0
+//			return (-1); 
+		// if is nl in actual buffer
+		if (endl_idx != -1) 
 		{
-			if (!(*line = malloc((idx + 1) * BUFFER_SIZE + 1)))
+			if (!(*line = malloc((idx + 1) * BUFFER_SIZE + *str_len + 1)))
 				return (-1);
+
 			i = 0;
+			// copy the str if exist and cpy buffer;
 			while (i < ret && buffer[i] != '\n')
 			{
-				(*line)[(idx) * BUFFER_SIZE + i] =  buffer[i];
+				if (i < *str_len)
+					(*line)[i] = str[i];
+				(*line)[(idx) * BUFFER_SIZE + *str_len +i] = buffer[i];
 				i++;
 			}
-// while missing
-			while (++i < ret)
-				*str++ =  buffer[i];
-			*str = '\0';
-			
-			(*line)[(idx) * BUFFER_SIZE + i] =  '\0';
-			return (ret);
+			// copy the rest of the buffer in str;
+			*str_len = 0;
+			while (++i < ret) 
+				str[(*str_len)++] = buffer[i];
+//			if (i < BUFFER_SIZE - 1)
+//				str[*str_len] = '\0';
+			return (1);
 		}
-		else 
-			return (read_line(fd, line, str, idx + 1));
+		else
+		{
+			if ((is_line = read_line(fd, line, str, str_len, idx + 1)))
+			{
+				i = 0;
+				while (i < BUFFER_SIZE)
+				{
+					(*line)[(idx) * BUFFER_SIZE + *str_len +i] = buffer[i];
+					i++;
+				}
+			}
+			return (is_line);
+		}
 	}
-	
+
 	return (0);
 }
 
 int		get_next_line(int fd, char **line)
 {
 	static char	str[BUFFER_SIZE];
+	int	str_len;
 	int ret;
 
-	if (fd < 0 || (ret = read_line(fd, line, str, 0)) == -1)
+	str_len = 0;
+	if (fd < 0 || (ret = read_line(fd, line, str, &str_len, 0)) == -1)
 		return (-1);
 	else if (ret)
 		return (1);

@@ -7,7 +7,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:14 by juligonz          #+#    #+#             */
-/*   Updated: 2019/10/19 12:48:07 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/01 16:52:36 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@
 # include <stdlib.h>
 # include <unistd.h>
 
+typedef struct  s_str
+{
+	char	*str[BUFFER_SIZE];
+    int		*len;
+}               t_str;
+
 int		get_next_line(int fd, char **line);
-char	*ft_strdup_cat(char *src, char *buf);
-int		ft_strlen(char *str);
-char	*ft_strdup(char *src);
 
 #endif
