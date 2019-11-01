@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/01 18:56:14 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/01 19:25:59 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int	read_line(int fd, char **line, char *str, int *str_len, size_t idx)
 	int		endl_idx;
 	int		is_line;
 	
-	if ((endl_idx = is_endl(str)) >= 0 && idx == 0) // if there is a \n in str and no recurtion
+	if (idx == 0 && (endl_idx = is_endl(str)) >= 0) // if there is a \n in str and no recurtion
 	{
 		i = 0;
 		if (!(*line = malloc(endl_idx + 1)))
@@ -60,11 +60,12 @@ static int	read_line(int fd, char **line, char *str, int *str_len, size_t idx)
 
 
 
-	while ((ret = read(fd, buffer, BUFFER_SIZE)))
+	while ((ret = read(fd, buffer, BUFFER_SIZE))) // change while to if
 	{
 //		if ((endl_idx = is_endl(buffer)) == -2) // if there is a \0
 //			return (-1); 
-		// if is nl in actual buffer
+          // if is nl in actual buffer
+		endl_idx = is_endl(buffer);
 		if (endl_idx != -1) 
 		{
 			if (!(*line = malloc((idx + 1) * BUFFER_SIZE + *str_len + 1)))
@@ -98,10 +99,11 @@ static int	read_line(int fd, char **line, char *str, int *str_len, size_t idx)
 					i++;
 				}
 			}
+//			else if (!is_line)
+			// malloc and copy from this idx
 			return (is_line);
 		}
 	}
-
 	return (0);
 }
 
