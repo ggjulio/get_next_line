@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 12:54:48 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/04 13:59:05 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/04 17:36:21 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ int main(int ac, char **av)
 
 	line = NULL;
 	fd = open(av[1], O_RDONLY);
+	(void)fd;
 	if (ac > 1)
 		if (fd == -1)
 			return (-1);
@@ -42,7 +43,6 @@ int main(int ac, char **av)
 		printf("%d |>>| %s\n", ret_value, line);
 		ft_strdel(&line);
 	}
-	printf("%d |>>| %s\n", ret_value, line);
 	close(fd);
 	return (0);
 }

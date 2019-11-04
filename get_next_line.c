@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/04 15:18:47 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/04 17:42:24 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ static int	pop_line(t_str *str, char **line)
 	return (0);
 }
 
+#include <stdio.h>
+
 static int	read_line(int fd, char **line, t_str *str, int idx)
 {
 	char	buffer[BUFFER_SIZE];
@@ -75,7 +77,7 @@ static int	read_line(int fd, char **line, t_str *str, int idx)
 			while (++i < endl_idx)
 				(*line)[idx * BUFFER_SIZE + str->len + i] = buffer[i];
 			(*line)[idx * BUFFER_SIZE + str->len + i] = '\0';
-			str->old_len = str->len;
+//			str->old_len = str->len;
 			str->len = 0;
 			while (++i < ret)
 				str->s[str->len++] = buffer[i];
@@ -83,11 +85,21 @@ static int	read_line(int fd, char **line, t_str *str, int idx)
 		}
 		else
 		{
+//			str->old_len = str->len;
+//			if (ret < BUFFER_SIZE && (is_line = read_line(fd, line, str, idx + 1)) == -1)
 			if ((is_line = read_line(fd, line, str, idx + 1)) == -1)
 				return (-1);
+			else
+			{
+				if (!(*line = malloc(idx * BUFFER_SIZE + ret + str->len + 1)))
+					return (-1);
+				i = -1;
+				while (++i < str->len)
+					(*line)[i] = str->s[i];
+			}
 			i = -1;
-			while (++i < BUFFER_SIZE)
-				(*line)[idx * BUFFER_SIZE + str->old_len + i] = buffer[i];
+			while (++i < ret)
+				(*line)[idx * BUFFER_SIZE + str->len + i] = buffer[i];
 			return (is_line);
 		}
 	}
@@ -98,8 +110,14 @@ static int	read_line(int fd, char **line, t_str *str, int idx)
 		i = -1;
 		while (++i < str->len)
 			(*line)[i] = str->s[i];
+		(*line)[idx * BUFFER_SIZE + str->len + 1] = '\0';
 		return (0);
 	}
+
+	if (!(*line = malloc(1)))
+		return (-1);
+	(*line)[0] = '\0';
+	return (0);
 }
 
 int			get_next_line(int fd, char **line)
@@ -107,7 +125,7 @@ int			get_next_line(int fd, char **line)
 	static t_str	str;
 	int				ret;
 
-	if (fd < 0 || BUFFER_SIZE < 1 || (ret = read_line(fd, line, &str, 0)) == -1)
+	if (fd < 0 || BUFFER_SIZE < 1 || read(fd, NULL, 0) == -1 || (ret = read_line(fd, line, &str, 0)) == -1)
 		return (-1);
 	return (ret);
 }
