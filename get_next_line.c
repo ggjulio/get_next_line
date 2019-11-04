@@ -6,10 +6,12 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/02 21:05:57 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/03 08:55:34 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
+#include <stdlib.h>
 #include "get_next_line.h"
 
 // return -1 if no nl, return -2 if \0 in str,
@@ -41,7 +43,7 @@ static int	read_line(int fd, char **line, char *str, int *str_len, int idx)
 	int		endl_idx;
 	int		is_line;
 	
-	if (idx == 0 && (endl_idx = is_endl(str)) >= 0) // if there is a \n in str and no recurtion
+	if (idx == 0 && (endl_idx = is_endl(str)) >= 0) 
 	{
 		i = 0;
 		if (!(*line = malloc(endl_idx + 1)))
@@ -49,10 +51,11 @@ static int	read_line(int fd, char **line, char *str, int *str_len, int idx)
 		while (str[i] != '\n')
 		{
 			(*line)[i] = str[i];
-			str[i++] = '\0'; // usefull ??
+//			str[i++] = '\0'; // usefull ??
+			i++;
 		}
-		(*line)[i] = '\0';
-		str[i++] = '\0';
+		(*line)[i++] = '\0';
+//		str[i++] = '\0';
 		j = 0;
 		while (i < BUFFER_SIZE && str[i])        //move the rest of str at the begining
 			str[j++] = str[i++];
@@ -61,11 +64,11 @@ static int	read_line(int fd, char **line, char *str, int *str_len, int idx)
 		return (1);
 	}
 	
-	if ((ret = read(fd, buffer, BUFFER_SIZE)) > 0) // change while to if
+	if ((ret = read(fd, buffer, BUFFER_SIZE)) >= 0) // change while to if
 	{
-		if ((endl_idx = is_endl(buffer)) != -1)           // if is nl in actual buffer ERROR HERE if \0
+		if ((endl_idx = is_endl(buffer)) >= 0)           // if is nl in actual buffer ERROR HERE if \0
 		{
-			printf("|if|%d|\n", idx * BUFFER_SIZE + endl_idx + *str_len + 1);
+//			printf("|if|%d|\n", idx * BUFFER_SIZE + endl_idx + *str_len + 1);
 			if (!(*line = malloc(idx * BUFFER_SIZE + endl_idx + *str_len + 1)))
 				return (-1);
 
@@ -74,23 +77,19 @@ static int	read_line(int fd, char **line, char *str, int *str_len, int idx)
 			while (++i < *str_len)
 				(*line)[i] = str[i];
 			str[0] = '\0';
-			i = 0;
-			while (i < ret && buffer[i] != '\n')
-			{
-				(*line)[(idx) * BUFFER_SIZE + *str_len +i] = buffer[i];
-				i++;
-			}
-			// copy the rest of the buffer in str;
-			*str_len = 0;
+			i = -1;
+			while (++i < ret && buffer[i] != '\n')
+				(*line)[(idx) * BUFFER_SIZE + *str_len + i] = buffer[i];
+			(*line)[(idx) * BUFFER_SIZE + *str_len + i] = '\0';
+			*str_len = 0; 			// copy the rest of the buffer in str;
 			while (++i < ret) 
 				str[(*str_len)++] = buffer[i];
-			if (*str_len < BUFFER_SIZE) // Is usefull ?
+			if (*str_len < BUFFER_SIZE)
 				str[*str_len] = '\0';
 			return (1);
 		}
 		else
 		{
-//			int test = *str_len;
 			if ((is_line = read_line(fd, line, str, str_len, idx + 1)) == -1)
 					return (-1);				
 			i = 0;
@@ -105,10 +104,24 @@ static int	read_line(int fd, char **line, char *str, int *str_len, int idx)
 	}
 	else 		//malloc and return 0
 	{
-		printf("|el|%d|\n", idx -1 * BUFFER_SIZE + *str_len + 1);
-		if (!(*line = malloc((idx - 1) * BUFFER_SIZE + *str_len + 1))) // a voir la taille
+//		printf("|el|%d|\n", idx * BUFFER_SIZE + *str_len + 1);
+		if (!(*line = malloc(idx * BUFFER_SIZE + *str_len + 1))) 
 			return (-1);
-//		printf("warning RET == 0 !!!!!\n");
+
+		i = 0;
+		if (idx == 0 && *str_len > 0)
+		{
+			while (i < *str_len)
+			{
+				(*line)[i] = str[i];
+				i++;
+			}
+			str[0] = '\0';
+			*str_len = 0;
+			(*line)[i] = '\0';
+			return (1);
+		}
+		(*line)[i] = '\0';
 	}
 	return (0);
 }

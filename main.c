@@ -6,11 +6,12 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/30 12:54:48 by juligonz          #+#    #+#             */
-/*   Updated: 2019/10/30 13:32:39 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/03 08:54:01 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

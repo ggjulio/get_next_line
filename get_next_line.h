@@ -7,19 +7,16 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:14 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/01 16:52:36 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/03 08:50:46 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 
-# include <stdlib.h>
-# include <unistd.h>
-
 typedef struct  s_str
 {
-	char	*str[BUFFER_SIZE];
+	char	*s[BUFFER_SIZE];
     int		*len;
 }               t_str;
 
