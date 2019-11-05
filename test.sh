@@ -1,6 +1,6 @@
-rm -f get_next_line
 
-gcc -Wall -Wextra -Werror -D BUFFER_SIZE=64 -I. get_next_line.c get_next_line_utils.c test.c -o get_next_line
-./get_next_line < tests/simple
-
-rm -f get_next_line
+(for ((i=0; i<20; i+=1)); do
+	printf "||||||||||||||||||||||BUFFER_SIZE = %-5d  ||||||||||||||||||||||||||\n" $i
+    gcc -g3 -Wall -Wextra -Werror -D BUFFER_SIZE=$i get_next_line.c main.c && ./a.out ~/documents/get_next_line/$1;
+done
+) | less
