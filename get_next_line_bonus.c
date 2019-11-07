@@ -6,11 +6,11 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 16:48:36 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/07 16:53:11 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 18:10:05 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 /*
 ** return -1 of no nl, or return idx of nl
@@ -98,13 +98,22 @@ int			get_next_line(int fd, char **line)
 
 	if (fd < 0 || !line || BUFFER_SIZE < 1 || read(fd, NULL, 0) == -1)
 		return (-1);
-	if ((ret = pop_line(&str, line)) != 0)
+	i = 0;
+	while (fd != 0 && ++i < FD_MAX)
+		if (str[i].fd == fd)
+			break ;
+	if (i == FD_MAX)
+	{
+		i = 0;
+		while (++i < FD_MAX && str[i].fd != 0)
+			;
+		if (i < FD_MAX)
+			str[i].fd = fd;
+		else
+			return (-1);
+	}
+	if ((ret = pop_line(str + i, line)) != 0)
 		return (ret);
-	i = -1;
-	while (++i)
-		
 	str[i].old_len = str[i].len;
-	if ((ret = read_line(line, &str, &offsets, 0)) == -1)
-		return (-1);
-	return (ret);
+	return (read_line(line, str + i, &offsets, 0));
 }
