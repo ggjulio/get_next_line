@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 16:48:36 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/07 18:10:05 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 19:34:35 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,22 +98,12 @@ int			get_next_line(int fd, char **line)
 
 	if (fd < 0 || !line || BUFFER_SIZE < 1 || read(fd, NULL, 0) == -1)
 		return (-1);
-	i = 0;
-	while (fd != 0 && ++i < FD_MAX)
-		if (str[i].fd == fd)
-			break ;
-	if (i == FD_MAX)
-	{
-		i = 0;
-		while (++i < FD_MAX && str[i].fd != 0)
-			;
-		if (i < FD_MAX)
-			str[i].fd = fd;
-		else
-			return (-1);
-	}
+	if (FD_MAX < 2 || (i = multi_fd(str, fd)) == -1)
+		return (-1);
 	if ((ret = pop_line(str + i, line)) != 0)
 		return (ret);
 	str[i].old_len = str[i].len;
-	return (read_line(line, str + i, &offsets, 0));
+	if ((ret = read_line(line, str + i, &offsets, 0)) < 1)
+		str[i].fd = 0;
+	return (ret);
 }

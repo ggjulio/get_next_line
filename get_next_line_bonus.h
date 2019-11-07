@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 16:55:03 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/07 18:14:19 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 19:34:28 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# define FD_MAX 3
+# define FD_MAX 2
 
 typedef struct	s_str
 {
@@ -32,5 +32,6 @@ typedef struct	s_offsets
 }				t_offsets;
 
 int				get_next_line(int fd, char **line);
+int				multi_fd(t_str *str, int fd);
 
 #endif
