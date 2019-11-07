@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:14 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/04 15:18:19 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 16:15:09 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,17 @@
 
 typedef struct	s_str
 {
+	int		fd;
 	char	s[BUFFER_SIZE];
 	int		len;
 	int		old_len;
 }				t_str;
+
+typedef struct	s_offsets
+{
+	int		d;
+	int		s;
+}				t_offsets;
 
 int				get_next_line(int fd, char **line);
 
