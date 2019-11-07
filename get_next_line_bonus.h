@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 16:55:03 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/07 19:34:28 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 19:38:08 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include <unistd.h>
 # include <stdlib.h>
-# define FD_MAX 2
+# define FD_MAX 60
 
 typedef struct	s_str
 {
