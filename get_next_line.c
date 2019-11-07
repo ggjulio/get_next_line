@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/10 16:51:24 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/05 19:05:21 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/07 13:26:11 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,25 +61,25 @@ static int	read_line(int fd, char **line, t_str *str, int idx)
 
 	if (idx == 0 && (ret = pop_line(str, line)) != 0)
 		return (ret);
-	ret = read(fd, buffer, BUFFER_SIZE);
-	if ((endl_idx = is_endl(buffer, BUFFER_SIZE)) != -1 || ret != BUFFER_SIZE)
+	if ((ret = read(fd, buffer, BUFFER_SIZE)) == -1)
+		return (-1);
+	if ((endl_idx = is_endl(buffer, ret)) != -1 || ret != BUFFER_SIZE)
 	{
-		endl_idx = (endl_idx < 0 ? 0 : endl_idx);
-		if (!(*line = malloc(idx * BUFFER_SIZE + endl_idx + str->len + 1)))
+		if (!(*line = malloc(idx * BUFFER_SIZE + (endl_idx == -1 ? ret : endl_idx) + str->len + 1)))
 			return (-1);
 		i = -1;
 		while (++i < str->len)
 			(*line)[i] = str->s[i];
 		str->s[0] = '\0';
 		i = -1;
-		while (++i < endl_idx)
+		while (++i < (endl_idx ==  -1 ? ret : endl_idx))
 			(*line)[idx * BUFFER_SIZE + str->len + i] = buffer[i];
 		(*line)[idx * BUFFER_SIZE + str->len + i] = '\0';
 		str->old_len = str->len;
 		str->len = 0;
 		while (++i < ret)
 			str->s[str->len++] = buffer[i];
-		if (ret > 0)
+		if (endl_idx != -1)
 			return (1);
 		return (0);
 	}
