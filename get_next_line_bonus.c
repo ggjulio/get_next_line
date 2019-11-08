@@ -6,7 +6,7 @@
 /*   By: juligonz <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/07 16:48:36 by juligonz          #+#    #+#             */
-/*   Updated: 2019/11/07 19:34:35 by juligonz         ###   ########.fr       */
+/*   Updated: 2019/11/08 14:08:57 by juligonz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,9 @@ int			get_next_line(int fd, char **line)
 		return (ret);
 	str[i].old_len = str[i].len;
 	if ((ret = read_line(line, str + i, &offsets, 0)) < 1)
+	{
 		str[i].fd = 0;
+		str[i].s[0] = '\0';
+	}
 	return (ret);
 }
